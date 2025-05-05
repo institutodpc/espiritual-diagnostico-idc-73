@@ -70,7 +70,7 @@ const QuestionCard = ({
           onClick={handleNext}
           disabled={selectedOption === null}
         >
-          Próxima
+          {questionNumber === totalQuestions ? "Ver resultado" : "Próxima"}
         </Button>
       </CardFooter>
     </Card>

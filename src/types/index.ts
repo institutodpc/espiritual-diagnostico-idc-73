@@ -11,16 +11,21 @@ export interface Question {
   options: {
     id: number;
     text: string;
-    profileId: number;
+    profileId: string;
   }[];
 }
 
 export interface SpiritualProfile {
-  id: number;
+  id: string;
   name: string;
   description: string;
+  formation: string;
+  refuge: string;
   biblicalCharacter: string;
   transformation: string;
+  commonPains: string;
+  solutions: string;
+  summary: string;
 }
 
 export type Step = 'welcome' | 'register' | 'questions' | 'result';

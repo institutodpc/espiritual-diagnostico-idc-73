@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserData, SpiritualProfile } from "@/types";
-import { Download } from "lucide-react";
+import { Download, MessageSquare } from "lucide-react";
 
 interface ResultCardProps {
   userData: UserData;
@@ -12,7 +12,7 @@ interface ResultCardProps {
 
 const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps) => {
   const handleDownloadPDF = () => {
-    // In a real application, this would generate and download a PDF
+    // Em uma aplicação real, isso geraria e baixaria um PDF
     alert("Função de download de PDF será implementada futuramente.");
   };
   
@@ -26,13 +26,18 @@ const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps
           👉 {profile.name}
         </div>
         <CardDescription className="text-base mt-4">
-          Este perfil representa sua maior batalha espiritual neste momento. Aqui está o que isso revela sobre você:
+          {profile.description}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="p-6 bg-white/30 rounded-xl">
-          <h3 className="font-semibold text-lg mb-3 text-purple-700">🧩 Descrição do perfil:</h3>
-          <p className="text-gray-700">{profile.description}</p>
+          <h3 className="font-semibold text-lg mb-3 text-purple-700">🧩 COMO ESSE PERFIL SE FORMA:</h3>
+          <p className="text-gray-700">{profile.formation}</p>
+        </div>
+        
+        <div className="p-6 bg-white/30 rounded-xl">
+          <h3 className="font-semibold text-lg mb-3 text-purple-700">🏠 REFÚGIO QUE PROCURA:</h3>
+          <p className="text-gray-700">{profile.refuge}</p>
         </div>
         
         <div className="p-6 bg-white/30 rounded-xl">
@@ -42,7 +47,22 @@ const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps
         
         <div className="p-6 bg-white/30 rounded-xl">
           <h3 className="font-semibold text-lg mb-3 text-purple-700">✨ Como Deus o transformou:</h3>
-          <p className="text-gray-700">{profile.transformation}</p>
+          <p className="text-gray-700 whitespace-pre-line">{profile.transformation}</p>
+        </div>
+        
+        <div className="p-6 bg-white/30 rounded-xl">
+          <h3 className="font-semibold text-lg mb-3 text-purple-700">💔 DORES EM COMUM:</h3>
+          <p className="text-gray-700">{profile.commonPains}</p>
+        </div>
+        
+        <div className="p-6 bg-white/30 rounded-xl">
+          <h3 className="font-semibold text-lg mb-3 text-purple-700">🔥 O QUE PRECISA FAZER PARA SAIR DESSE PERFIL:</h3>
+          <p className="text-gray-700 whitespace-pre-line">{profile.solutions}</p>
+        </div>
+        
+        <div className="p-6 bg-white/30 rounded-xl">
+          <h3 className="font-semibold text-lg mb-3 text-purple-700">📝 RESUMO:</h3>
+          <p className="text-gray-700">{profile.summary}</p>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col space-y-4">
@@ -53,14 +73,31 @@ const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps
           Quero meu plano de transformação
         </Button>
         
-        <Button 
-          variant="outline" 
-          className="w-full md:w-auto border-purple-300 text-purple-700 hover:bg-purple-50"
-          onClick={handleDownloadPDF}
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Baixar em PDF
-        </Button>
+        <div className="flex flex-col md:flex-row gap-3 w-full">
+          <Button 
+            variant="outline" 
+            className="w-full md:w-auto border-purple-300 text-purple-700 hover:bg-purple-50"
+            onClick={handleDownloadPDF}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Baixar em PDF
+          </Button>
+          
+          <a 
+            href="https://www.whatsapp.com/channel/0029VbAfmlsDp2Q5WBtB4A3t" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full md:w-auto"
+          >
+            <Button 
+              variant="outline" 
+              className="w-full border-green-500 text-green-600 hover:bg-green-50"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Entrar no grupo do WhatsApp
+            </Button>
+          </a>
+        </div>
       </CardFooter>
     </Card>
   );

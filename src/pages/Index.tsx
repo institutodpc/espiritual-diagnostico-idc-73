@@ -14,8 +14,8 @@ const Index = () => {
   const [step, setStep] = useState<Step>("welcome");
   const [userData, setUserData] = useState<UserData>({ name: "", email: "", whatsapp: "" });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Map<number, number>>(new Map());
-  const [dominantProfileId, setDominantProfileId] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<Map<number, string>>(new Map());
+  const [dominantProfileId, setDominantProfileId] = useState<string | null>(null);
 
   const handleStartDiagnostic = () => {
     setStep("register");
@@ -27,24 +27,25 @@ const Index = () => {
     toast.success("Registro concluído! Vamos iniciar o diagnóstico.");
   };
 
-  const handleAnswer = (questionId: number, optionProfileId: number) => {
-    // Get the selected option's profile ID
+  const handleAnswer = (questionId: number, optionId: number) => {
+    // Encontrar a questão
     const question = questions.find(q => q.id === questionId);
     if (!question) return;
     
-    const selectedOption = question.options.find(opt => opt.id === optionProfileId);
+    // Encontrar a opção selecionada
+    const selectedOption = question.options.find(opt => opt.id === optionId);
     if (!selectedOption) return;
     
-    // Save answer
+    // Salvar o perfil associado à resposta
     const newAnswers = new Map(answers);
     newAnswers.set(questionId, selectedOption.profileId);
     setAnswers(newAnswers);
     
-    // Move to next question or finish
+    // Avançar para a próxima pergunta ou finalizar
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Calculate result
+      // Calcular o resultado
       const resultProfileId = calculateResult(newAnswers);
       setDominantProfileId(resultProfileId);
       setStep("result");
