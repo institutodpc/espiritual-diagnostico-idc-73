@@ -1,4 +1,3 @@
-
 import { Question, SpiritualProfile } from "@/types";
 
 export const questions: Question[] = [
@@ -98,7 +97,7 @@ export const questions: Question[] = [
     options: [
       { id: 1, text: "Me sinto indigno demais para recomeçar.", profileId: "Não se Perdoa" },
       { id: 2, text: "Espero um sinal de Deus para tomar atitude.", profileId: "Procrastinador" },
-      { id: 3, text: "Me comparo com quem parece "mais santo".", profileId: "Invejoso Espiritual" }
+      { id: 3, text: "Me comparo com quem parece 'mais santo'.", profileId: "Invejoso Espiritual" }
     ]
   },
   {
@@ -206,7 +205,7 @@ export const questions: Question[] = [
     options: [
       { id: 1, text: "Costumo pensar logo em desistir.", profileId: "Vitimista" },
       { id: 2, text: "Adio a decisão esperando que tudo se resolva sozinho.", profileId: "Procrastinador" },
-      { id: 3, text: "Digo a mim mesmo: "Não sou capaz, não sei lidar com isso".", profileId: "Síndrome do Eu Não" }
+      { id: 3, text: "Digo a mim mesmo: 'Não sou capaz, não sei lidar com isso'.", profileId: "Síndrome do Eu Não" }
     ]
   },
   {
@@ -231,7 +230,7 @@ export const questions: Question[] = [
     id: 26,
     text: "Quando vejo alguém sendo exaltado por Deus...",
     options: [
-      { id: 1, text: "Me questiono: "Por que comigo não acontece?"", profileId: "Lamentador" },
+      { id: 1, text: "Me questiono: 'Por que comigo não acontece?'", profileId: "Lamentador" },
       { id: 2, text: "Sinto algo estranho por dentro, mas disfarço.", profileId: "Invejoso Espiritual" },
       { id: 3, text: "Tento imitar atitudes daquela pessoa esperando ter o mesmo resultado.", profileId: "Bajulador" }
     ]
@@ -259,7 +258,7 @@ export const questions: Question[] = [
     text: "Quando estou em um culto ou estudo bíblico, eu...",
     options: [
       { id: 1, text: "Fico pensando em outras coisas.", profileId: "Impaciente" },
-      { id: 2, text: "Penso: "Isso não é pra mim, é pra fulano que não está aqui".", profileId: "Julgador" },
+      { id: 2, text: "Penso: 'Isso não é pra mim, é pra fulano que não está aqui'.", profileId: "Julgador" },
       { id: 3, text: "Finjo estar prestando atenção, mas estou só no automático.", profileId: "Hipócrita" }
     ]
   },
@@ -308,9 +307,9 @@ export const spiritualProfiles: SpiritualProfile[] = [
     description: "Sempre voltado para suas próprias perdas e dificuldades, lamenta constantemente, esquecendo-se de olhar para as promessas de Deus.",
     formation: "Esse crente nasceu da decepção com o tempo de Deus. Ele acreditava, orava, jejuava, mas as coisas não aconteceram. Então a fé virou mágoa, e a mágoa virou identidade. Ele não percebe, mas murmura até quando agradece.",
     refuge: "O Lamentador encontra abrigo nas próprias feridas. Ele se esconde atrás da dor como se fosse um cobertor espiritual, mas essa dor virou um ídolo — ele sente mais segurança na amargura do que nas promessas de Deus. O lamento virou uma linguagem, e o silêncio de Deus se transformou em desculpa para não confiar mais.",
-    biblicalCharacter: "Jó, o homem que perdeu tudo... e se perdeu por um tempo dentro da própria dor. Ele se perdeu justamente demais para sofrer. Fez da dor um púlpito e começou a pregar pra si mesmo: \"Eu sou vítima\". Ele não blasfemou com a boca, mas murmurou com o coração. \"Maldito o dia em que nasci...\" (Jó 3:3) — Ele amaldiçoou o nascimento, o chamado e o propósito.",
-    transformation: "Deus só virou o cativeiro de Jó depois que ele orou por seus amigos. Ou seja: quando ele parou de olhar pro umbigo e começou a liberar graça. Deus não mudou a sorte de Jó porque ele chorou muito, mas porque ele mudou sua postura.\n\n\"E o Senhor virou o cativeiro de Jó, quando orava pelos seus amigos...\" (Jó 42:10)",
-    commonPains: "Ele acredita que, se está sofrendo, é porque falhou em algo — e Deus está cobrando. Ele está ferido, mas aprendeu a sorrir na igreja. A dor espiritual não é expressada — ela é engolida, o que gera isolamento interior. A oração virou tarefa, não encontro. O Lamentador ora como quem cumpre pena, não como quem se encontra com o Pai. Como não entende o \"porquê do sofrimento\", o Lamentador começa a acusar o céu em silêncio. O Lamentador não é apenas alguém triste — é alguém com uma espiritualidade ferida, que passou a crer que Deus só envelheceu para os outros. Esse perfil precisa de cura emocional. Sem isso, ele se tornará estéril espiritualmente, mesmo estando dentro da igreja.",
+    biblicalCharacter: "Jó, o homem que perdeu tudo... e se perdeu por um tempo dentro da própria dor. Ele se perdeu justamente demais para sofrer. Fez da dor um púlpito e começou a pregar pra si mesmo: 'Eu sou vítima'. Ele não blasfemou com a boca, mas murmurou com o coração. 'Maldito o dia em que nasci...' (Jó 3:3) — Ele amaldiçoou o nascimento, o chamado e o propósito.",
+    transformation: "Deus só virou o cativeiro de Jó depois que ele orou por seus amigos. Ou seja: quando ele parou de olhar pro umbigo e começou a liberar graça. Deus não mudou a sorte de Jó porque ele chorou muito, mas porque ele mudou sua postura.\n\n'E o Senhor virou o cativeiro de Jó, quando orava pelos seus amigos...' (Jó 42:10)",
+    commonPains: "Ele acredita que, se está sofrendo, é porque falhou em algo — e Deus está cobrando. Ele está ferido, mas aprendeu a sorrir na igreja. A dor espiritual não é expressada — ela é engolida, o que gera isolamento interior. A oração virou tarefa, não encontro. O Lamentador ora como quem cumpre pena, não como quem se encontra com o Pai. Como não entende o 'porquê do sofrimento', o Lamentador começa a acusar o céu em silêncio. O Lamentador não é apenas alguém triste — é alguém com uma espiritualidade ferida, que passou a crer que Deus só envelheceu para os outros. Esse perfil precisa de cura emocional. Sem isso, ele se tornará estéril espiritualmente, mesmo estando dentro da igreja.",
     solutions: "🔥 1. Arrependa-se por idolatrar a própria dor. Você fez da sua dor um trono — e mandou nela. Mas Cristo só reina onde tem espaço. É hora de se levantar do altar do coitadismo.\n\n🔥 2. Enxergue que lamentar é murmurar disfarçado. Não é humildade — é orgulho ferido. Você sente que merece mais.\n\n🔥 3. Comece a agradecer antes de ver a mudança. Gratidão é fé em ação. O céu responde à voz que agradece no escuro.\n\n🔥 4. Ore por alguém — mesmo sem vontade. Assim como com Jó, sua libertação virá quando você quebrar o ciclo da autopiedade e se tornar canal de cura.",
     summary: "Você está preso num ciclo de tristeza que parece espiritual, mas é orgulho ferido. Deus não te esqueceu. Você é quem parou de olhar para Ele. Sua saída não é o que sente, mas o que decide: ou continua vivendo como uma vítima de Deus, ou começa a andar como filho amadurecido."
   },
@@ -322,7 +321,7 @@ export const spiritualProfiles: SpiritualProfile[] = [
     formation: "Este crente conhece a graça na teoria, mas não consegue aplicá-la a si mesmo. Cada erro do passado se torna um eco constante, impedindo-o de avançar com liberdade.",
     refuge: "Encontra refúgio na autopunição. Acredita que ao se castigar continuamente, de alguma forma está compensando pelo que fez errado.",
     biblicalCharacter: "Pedro, após negar Jesus três vezes. Ele voltou a pescar, como se não merecesse mais o chamado apostólico. Sua vergonha o levou de volta para o lugar de antes do chamado.",
-    transformation: "Jesus restaurou Pedro perguntando três vezes se ele o amava, uma para cada negação. Não concentrou-se nos erros, mas na oportunidade de recomeço. \"Apascenta as minhas ovelhas\" (João 21:17) - Jesus devolveu a missão a Pedro, mostrando que o passado não anulava seu propósito.",
+    transformation: "Jesus restaurou Pedro perguntando três vezes se ele o amava, uma para cada negação. Não concentrou-se nos erros, mas na oportunidade de recomeço. 'Apascenta as minhas ovelhas' (João 21:17) - Jesus devolveu a missão a Pedro, mostrando que o passado não anulava seu propósito.",
     commonPains: "Vive em constante autocondenação. Mesmo quando os outros já o perdoaram, continua punindo a si mesmo. Não consegue aceitar elogios ou reconhecimento. Muitas vezes cai nos mesmos erros porque, no fundo, já se vê como um fracasso. Tem dificuldade em crer que Deus ainda pode usá-lo poderosamente.",
     solutions: "🔥 1. Aceite que a dívida já foi paga. Cristo sofreu para que você não precisasse carregar mais esse peso.\n\n🔥 2. Entenda que não perdoar a si mesmo é um tipo de orgulho. É como dizer que seu pecado é maior que o sangue de Jesus.\n\n🔥 3. Comece a se ver como Deus o vê: perdoado, purificado, nova criatura.\n\n🔥 4. Assuma novos desafios na fé, mesmo se sentindo indigno. A obediência quebra o ciclo de autocondenação.",
     summary: "Você está vivendo como prisioneiro de um cárcere que já foi aberto. Deus já o libertou, mas você escolhe ficar algemado às suas falhas passadas. É tempo de aceitar o perdão divino e viver na liberdade que Cristo conquistou para você."
