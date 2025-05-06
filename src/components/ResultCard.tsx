@@ -3,17 +3,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserData, SpiritualProfile } from "@/types";
 import { Download, MessageSquare } from "lucide-react";
+import { generateResultPDF } from "@/utils/pdfGenerator";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 interface ResultCardProps {
   userData: UserData;
   profile: SpiritualProfile;
-  onTransformationPlan: () => void;
 }
 
-const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps) => {
+const ResultCard = ({ userData, profile }: ResultCardProps) => {
+  useEffect(() => {
+    // Save result to Supabase
+    const saveResultToSupabase = async () => {
+      try {
+        const { error } = await supabase
+          .from('results')
+          .insert([
+            { 
+              user_email: userData.email,
+              profile_id: profile.id,
+              created_at: new Date().toISOString()
+            }
+          ]);
+          
+        if (error) console.error("Error saving result:", error);
+      } catch (error) {
+        console.error("Error saving result to Supabase:", error);
+      }
+    };
+    
+    saveResultToSupabase();
+  }, [userData.email, profile.id]);
+
   const handleDownloadPDF = () => {
-    // Em uma aplicação real, isso geraria e baixaria um PDF
-    alert("Função de download de PDF será implementada futuramente.");
+    generateResultPDF(userData, profile);
   };
   
   return (
@@ -65,18 +89,11 @@ const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps
           <p className="text-gray-700">{profile.summary}</p>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <Button 
-          className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 shadow-lg"
-          onClick={onTransformationPlan}
-        >
-          Quero meu plano de transformação
-        </Button>
-        
-        <div className="flex flex-col md:flex-row gap-3 w-full">
+      <CardFooter className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-md">
           <Button 
             variant="outline" 
-            className="w-full md:w-auto border-purple-300 text-purple-700 hover:bg-purple-50"
+            className="w-full sm:w-1/2 border-purple-300 text-purple-700 hover:bg-purple-50"
             onClick={handleDownloadPDF}
           >
             <Download className="h-4 w-4 mr-2" />
@@ -87,7 +104,7 @@ const ResultCard = ({ userData, profile, onTransformationPlan }: ResultCardProps
             href="https://www.whatsapp.com/channel/0029VbAfmlsDp2Q5WBtB4A3t" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full md:w-auto"
+            className="w-full sm:w-1/2"
           >
             <Button 
               variant="outline" 
