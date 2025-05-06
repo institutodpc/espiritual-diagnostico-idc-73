@@ -1,5 +1,5 @@
 
-import { Question } from "@/types";
+import { Question, Option } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,7 +10,7 @@ interface QuestionCardProps {
   question: Question;
   questionNumber: number;
   totalQuestions: number;
-  onAnswer: (questionId: number, optionId: number) => void;
+  onAnswer: (questionId: number, optionId: number, profileId: string, weight: number) => void;
 }
 
 const QuestionCard = ({ 
@@ -21,10 +21,24 @@ const QuestionCard = ({
 }: QuestionCardProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
+  // Adicionar a opção "nenhuma das alternativas"
+  const allOptions = [
+    ...question.options,
+    { 
+      id: -question.id, // ID negativo para garantir que seja único
+      text: "Nenhuma das alternativas",
+      profileId: "neutro",
+      weight: 0
+    }
+  ];
+
   const handleNext = () => {
     if (selectedOption !== null) {
-      onAnswer(question.id, selectedOption);
-      setSelectedOption(null);
+      const option = allOptions.find(opt => opt.id === selectedOption);
+      if (option) {
+        onAnswer(question.id, selectedOption, option.profileId, option.weight);
+        setSelectedOption(null);
+      }
     }
   };
 
@@ -47,7 +61,7 @@ const QuestionCard = ({
           value={selectedOption?.toString()}
           onValueChange={(value) => setSelectedOption(parseInt(value))}
         >
-          {question.options.map((option) => (
+          {allOptions.map((option) => (
             <div 
               key={option.id} 
               className="flex items-start space-x-3 p-3 rounded-lg transition-all duration-200 hover:bg-white/30"

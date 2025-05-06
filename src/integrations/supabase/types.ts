@@ -44,6 +44,59 @@ export type Database = {
           },
         ]
       }
+      options: {
+        Row: {
+          created_at: string | null
+          id: number
+          profile_id: string
+          question_id: number
+          text: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          profile_id: string
+          question_id: number
+          text: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          profile_id?: string
+          question_id?: number
+          text?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "options_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questions: {
+        Row: {
+          created_at: string | null
+          id: number
+          text: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          text: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          text?: string
+        }
+        Relationships: []
+      }
       results: {
         Row: {
           created_at: string
@@ -72,6 +125,48 @@ export type Database = {
             referencedColumns: ["email"]
           },
         ]
+      }
+      spiritual_profiles: {
+        Row: {
+          biblical_character: string
+          common_pains: string
+          created_at: string | null
+          description: string
+          formation: string
+          id: string
+          name: string
+          refuge: string
+          solutions: string
+          summary: string
+          transformation: string
+        }
+        Insert: {
+          biblical_character: string
+          common_pains: string
+          created_at?: string | null
+          description: string
+          formation: string
+          id: string
+          name: string
+          refuge: string
+          solutions: string
+          summary: string
+          transformation: string
+        }
+        Update: {
+          biblical_character?: string
+          common_pains?: string
+          created_at?: string | null
+          description?: string
+          formation?: string
+          id?: string
+          name?: string
+          refuge?: string
+          solutions?: string
+          summary?: string
+          transformation?: string
+        }
+        Relationships: []
       }
       users: {
         Row: {

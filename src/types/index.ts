@@ -8,11 +8,14 @@ export interface UserData {
 export interface Question {
   id: number;
   text: string;
-  options: {
-    id: number;
-    text: string;
-    profileId: string;
-  }[];
+  options: Option[];
+}
+
+export interface Option {
+  id: number;
+  text: string;
+  profileId: string;
+  weight: number;
 }
 
 export interface SpiritualProfile {

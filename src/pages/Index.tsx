@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { UserData, Step } from "@/types";
+import { UserData, Step, Question, SpiritualProfile } from "@/types";
 import WelcomePopup from "@/components/WelcomePopup";
 import WelcomePage from "@/components/WelcomePage";
 import RegistrationForm from "@/components/RegistrationForm";
@@ -8,19 +8,58 @@ import QuestionCard from "@/components/QuestionCard";
 import ResultCard from "@/components/ResultCard";
 import BackgroundEffect from "@/components/BackgroundEffect";
 import Header from "@/components/Header";
-import { questions, spiritualProfiles, calculateResult } from "@/data/questions";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client"; 
+import { supabase } from "@/integrations/supabase/client";
+import { 
+  fetchQuestions, 
+  fetchSpiritualProfiles, 
+  saveAnswer, 
+  saveResult,
+  calculateDominantProfile
+} from "@/services/supabaseService";
 
 const Index = () => {
   const [step, setStep] = useState<Step>("welcome");
   const [userData, setUserData] = useState<UserData>({ name: "", email: "", whatsapp: "" });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Map<number, string>>(new Map());
+  const [answers, setAnswers] = useState<Map<number, { profileId: string, weight: number }>>(new Map());
   const [dominantProfileId, setDominantProfileId] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [spiritualProfiles, setSpiritualProfiles] = useState<SpiritualProfile[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if Supabase tables exist
+    // Carregar perguntas e perfis do Supabase
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [fetchedQuestions, fetchedProfiles] = await Promise.all([
+          fetchQuestions(),
+          fetchSpiritualProfiles()
+        ]);
+        
+        if (fetchedQuestions.length > 0) {
+          setQuestions(fetchedQuestions);
+        } else {
+          toast.error("Não foi possível carregar as perguntas. Por favor, tente novamente mais tarde.");
+        }
+        
+        if (fetchedProfiles.length > 0) {
+          setSpiritualProfiles(fetchedProfiles);
+        } else {
+          toast.error("Não foi possível carregar os perfis espirituais. Por favor, tente novamente mais tarde.");
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        toast.error("Erro ao carregar os dados. Por favor, verifique sua conexão.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+    
+    // Verificar se as tabelas do Supabase existem
     const checkSupabaseTables = async () => {
       try {
         const { data: users, error: usersError } = await supabase
@@ -33,24 +72,6 @@ const Index = () => {
           if (usersError.code === '42P01') {
             toast.error("Configuração do banco de dados necessária. Por favor, contate o administrador.");
           }
-        }
-        
-        const { data: results, error: resultsError } = await supabase
-          .from('results')
-          .select('id')
-          .limit(1);
-          
-        if (resultsError && resultsError.code === '42P01') {
-          console.error("Results table does not exist:", resultsError);
-        }
-        
-        const { data: answersData, error: answersError } = await supabase
-          .from('answers')
-          .select('id')
-          .limit(1);
-          
-        if (answersError && answersError.code === '42P01') {
-          console.error("Answers table does not exist:", answersError);
         }
       } catch (error) {
         console.error("Error checking Supabase tables:", error);
@@ -68,56 +89,74 @@ const Index = () => {
     setStep("register");
   };
 
-  const handleRegistrationSubmit = (data: UserData) => {
-    setUserData(data);
-    setStep("questions");
-    toast.success("Registro concluído! Vamos iniciar o diagnóstico.");
-  };
-
-  const handleAnswer = async (questionId: number, optionId: number) => {
-    // Find the question
-    const question = questions.find(q => q.id === questionId);
-    if (!question) return;
-    
-    // Find the selected option
-    const selectedOption = question.options.find(opt => opt.id === optionId);
-    if (!selectedOption) return;
-    
-    // Save the profile associated with the answer
-    const newAnswers = new Map(answers);
-    newAnswers.set(questionId, selectedOption.profileId);
-    setAnswers(newAnswers);
-    
-    // Save this answer to Supabase
+  const handleRegistrationSubmit = async (data: UserData) => {
     try {
+      // Salvar usuário no Supabase
       const { error } = await supabase
-        .from('answers')
+        .from('users')
         .insert([
-          { 
-            user_email: userData.email,
-            question_id: questionId,
-            option_id: optionId,
-            profile_id: selectedOption.profileId,
-            created_at: new Date().toISOString()
+          {
+            name: data.name,
+            email: data.email,
+            whatsapp: data.whatsapp
           }
         ]);
-        
-      if (error) console.error("Error saving answer:", error);
+      
+      if (error && error.code !== "23505") {  // Ignora erro de duplicação
+        console.error("Erro ao salvar usuário:", error);
+        toast.error("Erro ao registrar. Por favor, tente novamente.");
+        return;
+      }
+      
+      setUserData(data);
+      setStep("questions");
+      toast.success("Registro concluído! Vamos iniciar o diagnóstico.");
     } catch (error) {
-      console.error("Error saving answer to Supabase:", error);
-    }
-    
-    // Advance to the next question or finish
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      // Calculate the result
-      const resultProfileId = calculateResult(newAnswers);
-      setDominantProfileId(resultProfileId);
-      setStep("result");
-      toast.success("Diagnóstico concluído! Veja seu resultado.");
+      console.error("Erro durante o registro:", error);
+      toast.error("Ocorreu um erro inesperado. Por favor, tente novamente.");
     }
   };
+
+  const handleAnswer = async (questionId: number, optionId: number, profileId: string, weight: number) => {
+    try {
+      // Salvar a resposta no Supabase
+      await saveAnswer(userData.email, questionId, optionId, profileId);
+      
+      // Atualizar o estado local das respostas
+      const newAnswers = new Map(answers);
+      newAnswers.set(questionId, { profileId, weight });
+      setAnswers(newAnswers);
+      
+      // Avançar para a próxima pergunta ou finalizar
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      } else {
+        // Calcular o resultado
+        const resultProfileId = calculateDominantProfile(newAnswers);
+        setDominantProfileId(resultProfileId);
+        
+        // Salvar o resultado no Supabase
+        await saveResult(userData.email, resultProfileId);
+        
+        setStep("result");
+        toast.success("Diagnóstico concluído! Veja seu resultado.");
+      }
+    } catch (error) {
+      console.error("Erro ao processar resposta:", error);
+      toast.error("Erro ao processar sua resposta. Por favor, tente novamente.");
+    }
+  };
+
+  if (loading && step !== "welcome") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-lg text-purple-700">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-16">
@@ -134,7 +173,7 @@ const Index = () => {
           <RegistrationForm onSubmit={handleRegistrationSubmit} />
         )}
         
-        {step === "questions" && (
+        {step === "questions" && questions.length > 0 && (
           <QuestionCard
             question={questions[currentQuestionIndex]}
             questionNumber={currentQuestionIndex + 1}
@@ -143,7 +182,7 @@ const Index = () => {
           />
         )}
         
-        {step === "result" && dominantProfileId && (
+        {step === "result" && dominantProfileId && spiritualProfiles.length > 0 && (
           <ResultCard
             userData={userData}
             profile={spiritualProfiles.find(p => p.id === dominantProfileId) || spiritualProfiles[0]}
