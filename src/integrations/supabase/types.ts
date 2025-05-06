@@ -9,7 +9,94 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      answers: {
+        Row: {
+          created_at: string
+          id: string
+          option_id: number
+          profile_id: string
+          question_id: number
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          option_id: number
+          profile_id: string
+          question_id: number
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          option_id?: number
+          profile_id?: string
+          question_id?: number
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answers_user_email_fkey"
+            columns: ["user_email"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["email"]
+          },
+        ]
+      }
+      results: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "results_user_email_fkey"
+            columns: ["user_email"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["email"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

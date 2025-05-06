@@ -27,9 +27,11 @@ const Index = () => {
           .select('id')
           .limit(1);
           
-        if (usersError && usersError.code === '42P01') {
-          console.error("Users table does not exist:", usersError);
-          toast.error("Configuração do banco de dados necessária. Por favor, contate o administrador.");
+        if (usersError) {
+          console.error("Users table error:", usersError);
+          if (usersError.code === '42P01') {
+            toast.error("Configuração do banco de dados necessária. Por favor, contate o administrador.");
+          }
         }
         
         const { data: results, error: resultsError } = await supabase
@@ -41,7 +43,7 @@ const Index = () => {
           console.error("Results table does not exist:", resultsError);
         }
         
-        const { data: answers, error: answersError } = await supabase
+        const { data: answersData, error: answersError } = await supabase
           .from('answers')
           .select('id')
           .limit(1);
