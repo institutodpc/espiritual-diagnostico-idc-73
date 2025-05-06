@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { UserData, Step } from "@/types";
 import WelcomePopup from "@/components/WelcomePopup";
+import WelcomePage from "@/components/WelcomePage";
 import RegistrationForm from "@/components/RegistrationForm";
 import QuestionCard from "@/components/QuestionCard";
 import ResultCard from "@/components/ResultCard";
@@ -60,6 +61,10 @@ const Index = () => {
   }, []);
 
   const handleStartDiagnostic = () => {
+    setStep("welcome-page");
+  };
+
+  const handleStartRegistration = () => {
     setStep("register");
   };
 
@@ -70,15 +75,15 @@ const Index = () => {
   };
 
   const handleAnswer = async (questionId: number, optionId: number) => {
-    // Encontrar a questão
+    // Find the question
     const question = questions.find(q => q.id === questionId);
     if (!question) return;
     
-    // Encontrar a opção selecionada
+    // Find the selected option
     const selectedOption = question.options.find(opt => opt.id === optionId);
     if (!selectedOption) return;
     
-    // Salvar o perfil associado à resposta
+    // Save the profile associated with the answer
     const newAnswers = new Map(answers);
     newAnswers.set(questionId, selectedOption.profileId);
     setAnswers(newAnswers);
@@ -102,11 +107,11 @@ const Index = () => {
       console.error("Error saving answer to Supabase:", error);
     }
     
-    // Avançar para a próxima pergunta ou finalizar
+    // Advance to the next question or finish
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Calcular o resultado
+      // Calculate the result
       const resultProfileId = calculateResult(newAnswers);
       setDominantProfileId(resultProfileId);
       setStep("result");
@@ -122,6 +127,8 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         {step === "welcome" && <WelcomePopup onStart={handleStartDiagnostic} />}
+        
+        {step === "welcome-page" && <WelcomePage onStart={handleStartRegistration} />}
         
         {step === "register" && (
           <RegistrationForm onSubmit={handleRegistrationSubmit} />

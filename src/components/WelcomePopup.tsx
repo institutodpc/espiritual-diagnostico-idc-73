@@ -17,7 +17,7 @@ const WelcomePopup = ({ onStart }: WelcomePopupProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-md mx-auto p-8 rounded-xl bg-white/95 backdrop-blur-md border border-purple-200 shadow-xl">
+      <DialogContent className="max-w-md mx-auto p-8 rounded-xl bg-white border border-purple-200 shadow-xl">
         <DialogHeader className="space-y-6">
           <div className="mx-auto bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center">
             <span className="text-3xl">✨</span>

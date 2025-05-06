@@ -328,27 +328,51 @@ export const spiritualProfiles: SpiritualProfile[] = [
   }
 ];
 
-// Função para calcular o perfil dominante
+// Updated calculation function to ensure accuracy
 export const calculateResult = (answers: Map<number, string>): string => {
-  // Inicializa contagem de perfis
+  // Initialize profile counts
   const profileCounts = new Map<string, number>();
   
-  // Conta a ocorrência de cada perfil nas respostas
+  // Count the occurrence of each profile in the answers
   for (const profileId of answers.values()) {
     const currentCount = profileCounts.get(profileId) || 0;
     profileCounts.set(profileId, currentCount + 1);
   }
   
-  // Encontra o perfil com mais ocorrências
+  // Find the profile with the most occurrences
   let maxCount = 0;
-  let dominantProfileId = "Lamentador"; // Perfil padrão caso haja empate
+  let dominantProfileId = "";
   
   profileCounts.forEach((count, profileId) => {
+    console.log(`Profile ${profileId}: ${count} occurrences`);
     if (count > maxCount) {
       maxCount = count;
       dominantProfileId = profileId;
     }
   });
   
-  return dominantProfileId;
+  // If there's a tie, we need a tiebreaker
+  const tieBreakerProfiles: string[] = [];
+  profileCounts.forEach((count, profileId) => {
+    if (count === maxCount) {
+      tieBreakerProfiles.push(profileId);
+    }
+  });
+  
+  if (tieBreakerProfiles.length > 1) {
+    console.log("Multiple profiles tied with most occurrences:", tieBreakerProfiles);
+    
+    // Use the profile that appeared in the most recent questions as tiebreaker
+    // This assumes that later questions are more significant
+    for (let questionId = questions.length; questionId >= 1; questionId--) {
+      const profileForQuestion = answers.get(questionId);
+      if (profileForQuestion && tieBreakerProfiles.includes(profileForQuestion)) {
+        console.log(`Tiebreaker resolved with question ${questionId}, profile: ${profileForQuestion}`);
+        return profileForQuestion;
+      }
+    }
+  }
+  
+  console.log(`Dominant profile: ${dominantProfileId} with ${maxCount} occurrences`);
+  return dominantProfileId || "Lamentador"; // Default to Lamentador if no profile is found
 };

@@ -28,4 +28,4 @@ export interface SpiritualProfile {
   summary: string;
 }
 
-export type Step = 'welcome' | 'register' | 'questions' | 'result';
+export type Step = 'welcome' | 'welcome-page' | 'register' | 'questions' | 'result';

@@ -90,10 +90,10 @@ const ResultCard = ({ userData, profile }: ResultCardProps) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <div className="flex flex-row gap-3 justify-center w-full max-w-md">
+        <div className="flex flex-row gap-4 justify-center max-w-md">
           <Button 
             variant="outline" 
-            className="w-1/2 border-purple-300 text-purple-700 hover:bg-purple-50"
+            className="flex-1 border-purple-300 text-purple-700 hover:bg-purple-50"
             onClick={handleDownloadPDF}
           >
             <Download className="h-4 w-4 mr-2" />
@@ -104,7 +104,7 @@ const ResultCard = ({ userData, profile }: ResultCardProps) => {
             href="https://www.whatsapp.com/channel/0029VbAfmlsDp2Q5WBtB4A3t" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-1/2"
+            className="flex-1"
           >
             <Button 
               variant="outline" 
