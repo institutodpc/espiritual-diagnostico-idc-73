@@ -75,25 +75,72 @@ export const fetchSpiritualProfiles = async (): Promise<SpiritualProfile[]> => {
 };
 
 // Função para salvar uma resposta
-export const saveAnswer = async (
-  userEmail: string,
-  questionId: number,
-  optionId: number,
-  profileId: string
-) => {
-  const { error } = await supabase
-    .from('answers')
-    .insert([
-      { 
-        user_email: userEmail,
-        question_id: questionId,
-        option_id: optionId,
-        profile_id: profileId,
-        created_at: new Date().toISOString()
+export const saveAnswer = async (userEmail: string, questionId: number, optionId: number, profileId: string) => {
+  console.log("Salvando resposta:", { questionId, optionId, profileId });
+  
+  // Se for opção neutra, apenas retornar sucesso
+  if (profileId === "neutro") {
+    console.log("Resposta neutra processada com sucesso");
+    return {
+      success: true,
+      data: {
+        questionId,
+        optionId,
+        profileId
       }
-    ]);
+    };
+  }
+
+  try {
+    // Se for a opção neutra, pular o salvamento no banco
+    if (optionId === -1) {
+      return true;
+    }
+
+    // Primeiro, buscar a opção correta para a questão
+    const { data: optionData, error: optionError } = await supabase
+      .from('options')
+      .select('id, profile_id')
+      .eq('question_id', questionId)
+      .eq('id', optionId)
+      .single();
+
+    if (optionError || !optionData) {
+      console.error("Erro ao buscar opção:", optionError);
+      throw new Error(`Opção ${optionId} não encontrada para a questão ${questionId}`);
+    }
+
+    // Usar o profile_id da opção encontrada
+    console.log('Salvando resposta:', { 
+      userEmail, 
+      questionId, 
+      optionId: optionData.id,
+      profileId: optionData.profile_id 
+    });
+
+    const { error } = await supabase
+      .from('answers')
+      .insert([
+        { 
+          user_email: userEmail,
+          question_id: questionId,
+          option_id: optionData.id, // Usar o ID real da opção
+          profile_id: optionData.profile_id, // Usar o profile_id da opção
+          created_at: new Date().toISOString()
+        }
+      ]);
+      
+    if (error) {
+      console.error("Erro ao salvar resposta:", error);
+      throw error;
+    }
     
-  if (error) console.error("Erro ao salvar resposta:", error);
+    console.log('Resposta salva com sucesso');
+    return true;
+  } catch (error) {
+    console.error("Erro ao processar resposta:", error);
+    throw error;
+  }
 };
 
 // Função para salvar o resultado

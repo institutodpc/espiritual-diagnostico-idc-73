@@ -15,6 +15,7 @@ interface RegistrationFormProps {
 const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
   const [formData, setFormData] = useState<UserData>({
     name: "",
+    lastName: "", // Adicionado campo lastName
     email: "",
     whatsapp: "",
   });
@@ -23,19 +24,14 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target;
     
-    // Format WhatsApp number as user types
     if (name === "whatsapp") {
-      // Remove non-numeric characters
       value = value.replace(/\D/g, "");
       
-      // Apply formatting based on length
       if (value.length <= 2) {
         // Just the DDD
       } else if (value.length <= 7) {
-        // DDD + first part
         value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
       } else {
-        // Complete format: (XX) XXXXX-XXXX
         value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
       }
     }
@@ -44,20 +40,22 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
   };
 
   const validateForm = () => {
-    // Validate name (at least two names)
-    if (!formData.name.trim() || formData.name.trim().split(" ").length < 2) {
-      toast.error("Por favor, insira seu nome completo.");
+    if (!formData.name.trim()) {
+      toast.error("Por favor, insira seu nome.");
+      return false;
+    }
+
+    if (!formData.lastName.trim()) {
+      toast.error("Por favor, insira seu sobrenome.");
       return false;
     }
     
-    // Validate email with regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Por favor, insira um e-mail válido.");
       return false;
     }
     
-    // Validate WhatsApp (must have at least 14 characters with formatting)
     if (formData.whatsapp.replace(/\D/g, "").length < 10) {
       toast.error("Por favor, insira um número de WhatsApp válido com DDD.");
       return false;
@@ -66,44 +64,38 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
     return true;
   };
 
-  const saveUserToSupabase = async () => {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .insert([
-          { 
-            name: formData.name, 
-            email: formData.email, 
-            whatsapp: formData.whatsapp,
-            created_at: new Date().toISOString()
-          }
-        ]);
-        
-      if (error) throw error;
-      
-      // We don't need to handle success here as the form will proceed anyway
-    } catch (error) {
-      console.error("Error saving user to Supabase:", error);
-      // Continue anyway to not block user experience
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
     
     setLoading(true);
     
     try {
-      // Save user data to Supabase
-      await saveUserToSupabase();
+      const fullName = `${formData.name.trim()} ${formData.lastName.trim()}`;
       
-      // Proceed with the form submission
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          { 
+            name: fullName, 
+            email: formData.email,
+            whatsapp: formData.whatsapp,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .select();
+
+      if (error) throw error;
+      
+      // Chama a função onSubmit com os dados do usuário
       onSubmit(formData);
+      
     } catch (error) {
-      console.error("Error during registration:", error);
-      toast.error("Ocorreu um erro ao registrar seus dados. Tente novamente.");
+      console.error("Erro ao salvar usuário:", error);
+      toast.error("Ocorreu um erro ao salvar seus dados. Por favor, tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -123,17 +115,28 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Nome completo <span className="text-red-500">*</span></Label>
+              <Label htmlFor="name">Nome <span className="text-red-500">*</span></Label>
               <Input
                 id="name"
                 name="name"
-                placeholder="Seu nome e sobrenome"
+                placeholder="Seu nome"
                 value={formData.name}
                 onChange={handleChange}
                 required
                 className="bg-white/50"
               />
-              <p className="text-xs text-gray-500">Digite seu nome completo</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Sobrenome <span className="text-red-500">*</span></Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                placeholder="Seu sobrenome"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                className="bg-white/50"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">E-mail <span className="text-red-500">*</span></Label>
@@ -141,13 +144,13 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="seu.email@exemplo.com"
+                placeholder="Digite seu e-mail"
                 value={formData.email}
                 onChange={handleChange}
                 required
                 className="bg-white/50"
               />
-              <p className="text-xs text-gray-500">Usaremos para enviar seu resultado</p>
+              <p className="text-xs text-gray-500"></p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="whatsapp">WhatsApp com DDD <span className="text-red-500">*</span></Label>
@@ -160,7 +163,7 @@ const RegistrationForm = ({ onSubmit }: RegistrationFormProps) => {
                 required
                 className="bg-white/50"
               />
-              <p className="text-xs text-gray-500">Digite apenas números com DDD</p>
+              <p className="text-xs text-gray-500"></p>
             </div>
           </form>
         </CardContent>

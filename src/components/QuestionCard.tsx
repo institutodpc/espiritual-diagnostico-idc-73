@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface QuestionCardProps {
   question: Question;
@@ -13,31 +13,41 @@ interface QuestionCardProps {
   onAnswer: (questionId: number, optionId: number, profileId: string, weight: number) => void;
 }
 
-const QuestionCard = ({ 
-  question, 
-  questionNumber, 
-  totalQuestions, 
-  onAnswer 
-}: QuestionCardProps) => {
+const QuestionCard = ({ question, questionNumber, totalQuestions, onAnswer }: QuestionCardProps) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Adicionar a opção "nenhuma das alternativas"
-  const allOptions = [
+  // ID único para opção neutra (usando número negativo para evitar conflitos)
+  const neutralOptionId = -question.id;
+
+  const allOptions: Option[] = [
     ...question.options,
-    { 
-      id: -question.id, // ID negativo para garantir que seja único
+    {
+      id: neutralOptionId,
       text: "Nenhuma das alternativas",
       profileId: "neutro",
       weight: 0
     }
   ];
 
-  const handleNext = () => {
-    if (selectedOption !== null) {
-      const option = allOptions.find(opt => opt.id === selectedOption);
-      if (option) {
-        onAnswer(question.id, selectedOption, option.profileId, option.weight);
-        setSelectedOption(null);
+  const handleNext = async () => {
+    if (selectedOption !== null && !isSubmitting) {
+      try {
+        setIsSubmitting(true);
+        const option = allOptions.find(opt => opt.id === selectedOption);
+        
+        if (option) {
+          await onAnswer(
+            question.id,
+            option.id,
+            option.profileId,
+            option.weight
+          );
+        }
+      } catch (error) {
+        console.error('Erro ao processar resposta:', error);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -59,7 +69,10 @@ const QuestionCard = ({
         <RadioGroup 
           className="space-y-4"
           value={selectedOption?.toString()}
-          onValueChange={(value) => setSelectedOption(parseInt(value))}
+          onValueChange={(value) => {
+            const numValue = parseInt(value);
+            setSelectedOption(numValue);
+          }}
         >
           {allOptions.map((option) => (
             <div 
@@ -71,7 +84,10 @@ const QuestionCard = ({
                 id={`option-${option.id}`} 
                 className="mt-1"
               />
-              <Label htmlFor={`option-${option.id}`} className="font-normal cursor-pointer">
+              <Label 
+                htmlFor={`option-${option.id}`} 
+                className="font-normal cursor-pointer"
+              >
                 {option.text}
               </Label>
             </div>
@@ -82,9 +98,9 @@ const QuestionCard = ({
         <Button 
           className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-2 px-6 rounded-full transition-all duration-200 transform hover:scale-105 shadow-lg"
           onClick={handleNext}
-          disabled={selectedOption === null}
+          disabled={selectedOption === null || isSubmitting}
         >
-          {questionNumber === totalQuestions ? "Ver resultado" : "Próxima"}
+          {isSubmitting ? "Processando..." : questionNumber === totalQuestions ? "Ver resultado" : "Próxima"}
         </Button>
       </CardFooter>
     </Card>

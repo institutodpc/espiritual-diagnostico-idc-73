@@ -17,6 +17,7 @@ import {
   saveResult,
   calculateDominantProfile
 } from "@/services/supabaseService";
+import { useRouter } from 'next/router';
 
 const Index = () => {
   const [step, setStep] = useState<Step>("welcome");
@@ -119,27 +120,28 @@ const Index = () => {
 
   const handleAnswer = async (questionId: number, optionId: number, profileId: string, weight: number) => {
     try {
+      // Validar dados antes de salvar
+      if (!userData.email || !questionId || !optionId || !profileId) {
+        throw new Error("Dados inválidos para salvar resposta");
+      }
+
       // Salvar a resposta no Supabase
       await saveAnswer(userData.email, questionId, optionId, profileId);
       
-      // Atualizar o estado local das respostas
+      // Atualizar o estado local com a nova resposta
       const newAnswers = new Map(answers);
       newAnswers.set(questionId, { profileId, weight });
       setAnswers(newAnswers);
       
-      // Avançar para a próxima pergunta ou finalizar
+      // Avançar para a próxima questão
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        // Calcular o resultado
-        const resultProfileId = calculateDominantProfile(newAnswers);
-        setDominantProfileId(resultProfileId);
-        
-        // Salvar o resultado no Supabase
-        await saveResult(userData.email, resultProfileId);
-        
+        // Se for a última questão, calcular o resultado
+        const dominantProfile = calculateDominantProfile(newAnswers);
+        setDominantProfileId(dominantProfile);
+        await saveResult(userData.email, dominantProfile);
         setStep("result");
-        toast.success("Diagnóstico concluído! Veja seu resultado.");
       }
     } catch (error) {
       console.error("Erro ao processar resposta:", error);

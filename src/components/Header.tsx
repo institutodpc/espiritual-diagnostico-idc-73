@@ -12,9 +12,9 @@ const Header = ({ step }: HeaderProps) => {
       case "welcome":
         return "";
       case "welcome-page":
-        return "Bem-vindo ao Diagnóstico Espiritual";
+        return "";
       case "register":
-        return "Cadastre-se para Começar";
+        return "";
       case "questions":
         return "Questionário de Diagnóstico";
       case "result":
